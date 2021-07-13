@@ -9,8 +9,6 @@ public class PlayerControl : MonoBehaviour
     [Tooltip("移动速度")]
     public float speed;
 
-    // 游戏进行中
-    private bool flag = true;
     // 当前移动的方向
     private Vector2 dir;
 
@@ -21,7 +19,7 @@ public class PlayerControl : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (!flag) return;
+        if (!GameControl.flag) return;
         Vector2 newDir = joystick.Direction;
         if (newDir.magnitude != 0 && Vector2.Angle(dir, newDir) != 180)
             dir = newDir;
@@ -35,8 +33,4 @@ public class PlayerControl : MonoBehaviour
         transform.position = new Vector3(newPos.x, transform.position.y, newPos.y);
     }
 
-    public void Stop()
-    {
-        flag = false;
-    }
 }

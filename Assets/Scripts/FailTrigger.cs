@@ -8,7 +8,7 @@ public class FailTrigger : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            Debug.Log("blablablablabla");
+            GameControl.flag = false;
         }
     }
 }
