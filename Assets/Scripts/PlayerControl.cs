@@ -4,25 +4,39 @@ using UnityEngine;
 
 public class PlayerControl : MonoBehaviour
 {
+    [Tooltip("摇杆")]
     public FixedJoystick joystick;
+    [Tooltip("移动速度")]
     public float speed;
+
+    // 游戏进行中
+    private bool flag = true;
+    // 当前移动的方向
     private Vector2 dir;
 
-    // Start is called before the first frame update
     void Start()
     {
         dir = new Vector2(1, 0);
-        this.gameObject.GetComponent<Rigidbody>().velocity = (new Vector3(dir.x, 0, dir.y)) * speed;
     }
 
-    // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        Vector2 newDir = joystick.Direction.normalized;
-        if (newDir.magnitude == 0) return;
-        else
-        {
-            this.gameObject.GetComponent<Rigidbody>().velocity = (new Vector3(newDir.x, 0, newDir.y)) * speed;
-        }
+        if (!flag) return;
+        Vector2 newDir = joystick.Direction;
+        if (newDir.magnitude != 0 && Vector2.Angle(dir, newDir) != 180)
+            dir = newDir;
+
+        Move(dir);
+    }
+
+    void Move(Vector2 dir)
+    {
+        Vector2 newPos = new Vector2(transform.position.x + dir.x * speed * Time.deltaTime, transform.position.z + dir.y * speed * Time.deltaTime);
+        transform.position = new Vector3(newPos.x, transform.position.y, newPos.y);
+    }
+
+    public void Stop()
+    {
+        flag = false;
     }
 }
