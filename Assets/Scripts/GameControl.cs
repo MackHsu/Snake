@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameControl : MonoBehaviour
 {
@@ -25,6 +27,12 @@ public class GameControl : MonoBehaviour
     public float weight2;
     [Tooltip("拾取物level3权重")]
     public float weight3;
+    [Tooltip("玩家名")]
+    public Text playerName;
+    [Tooltip("分数")]
+    public Text score;
+    [Tooltip("游戏结束ui")]
+    public GameObject endUI;
 
     // 蛇头历史位置列表（循环数组）
     private static List<Vector3> posList;
@@ -41,8 +49,14 @@ public class GameControl : MonoBehaviour
     // 游戏进行中
     public static bool flag = true;
 
+    private static GameManager gm;
+
     void Start()
     {
+        flag = true;
+        gm = GameManager.GetManager();
+        playerName.text = gm.CurrentRecord.playerName;
+        score.text = gm.CurrentRecord.score.ToString();
         player.GetComponent<PlayerControl>().speed = baseSpeed;
 
         Trails = new List<GameObject>();
@@ -106,8 +120,11 @@ public class GameControl : MonoBehaviour
         }
     }
 
-    public  void Pick(Pickable p)
+    // 拾取
+    public void Pick(Pickable p)
     {
+        gm.CurrentRecord.score += p.GetScore();
+        score.text = gm.CurrentRecord.score.ToString();
         AddLength(p.getLength());
         StopCoroutine("Accelerate"); // 覆盖当前的加速状态
         StartCoroutine("Accelerate", p.getAccelerate());
@@ -149,8 +166,22 @@ public class GameControl : MonoBehaviour
         float total = weight1 + weight2 + weight3;
         float ran = Random.Range(0, total);
         if (ran < weight1) pickable.GetComponent<Pickable>().setLevel(1);
-        else if (ran < weight2) pickable.GetComponent<Pickable>().setLevel(2);
+        else if (ran < weight1 + weight2) pickable.GetComponent<Pickable>().setLevel(2);
         else pickable.GetComponent<Pickable>().setLevel(3);
 
+    }
+
+    public void EndGame()
+    {
+        flag = false;
+        gm.AddRecord();
+        endUI.SetActive(true);
+        StartCoroutine("BackIn3Secs");
+    }
+
+    IEnumerator BackIn3Secs()
+    {
+        yield return new WaitForSeconds(3);
+        SceneManager.LoadScene("Welcome");
     }
 }

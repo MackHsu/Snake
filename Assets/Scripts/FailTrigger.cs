@@ -8,7 +8,7 @@ public class FailTrigger : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            GameControl.flag = false;
+            GameObject.Find("GameControl").GetComponent<GameControl>().EndGame();
         }
     }
 }

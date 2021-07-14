@@ -27,7 +27,6 @@ public class Pickable : MonoBehaviour
 
     public void setLevel(int newLevel)
     {
-        Debug.Log("set level: " + newLevel);
         switch(newLevel)
         {
             case 1:
